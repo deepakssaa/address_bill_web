@@ -21,6 +21,11 @@ def draw_single_label(c, col, row, name, address_lines):
     x = MARGIN + col * LABEL_WIDTH
     y = PAGE_HEIGHT - MARGIN - (row + 1) * LABEL_HEIGHT
 
+    # --- Draw label border ---
+    c.setStrokeColorRGB(0.6, 0.6, 0.6)  # light gray
+    c.setLineWidth(0.5)
+    c.rect(x, y, LABEL_WIDTH, LABEL_HEIGHT)
+
     c.saveState()
     c.translate(x + LABEL_WIDTH / 2, y + LABEL_HEIGHT / 2)
     c.rotate(90)
@@ -44,6 +49,7 @@ def draw_single_label(c, col, row, name, address_lines):
         c.drawString(base_x + indent, base_y - 36 - i * 14, line)
 
     c.restoreState()
+
 
 
 # --- Home page ---
