@@ -58,36 +58,30 @@ def draw_label(c, x, y, name, address_lines):
     line_height = body_size + 4
     content_width = COLUMN_WIDTH - 2 * PADDING
 
+    cursor_y = y - PADDING - line_height  # extra top padding
+
     # Border
     label_height = measure_label_height(name, address_lines, content_width)
     c.rect(x, y - label_height, COLUMN_WIDTH, label_height)
 
-    c.saveState()
-
-    # Rotate content vertically
-    c.translate(x + COLUMN_WIDTH / 2, y - label_height / 2)
-    c.rotate(90)
-
-    start_x = -label_height / 2 + PADDING
-    cursor_y = content_width / 2 - PADDING - line_height
-
     # TO,
     c.setFont("Helvetica-Bold", body_size)
-    c.drawString(start_x, cursor_y, "TO,")
-    cursor_y -= line_height * 1.2
+    c.drawString(x + PADDING, cursor_y, "TO,")
+    cursor_y -= line_height
 
-    # Name
+    # Name (indented)
     for line in wrap_text(name, "Helvetica-Bold", body_size + 2, content_width - INDENT):
         c.setFont("Helvetica-Bold", body_size + 2)
-        c.drawString(start_x + INDENT, cursor_y, line)
+        c.drawString(x + PADDING + INDENT, cursor_y, line)
         cursor_y -= line_height
 
-    # Address
+    # Address (indented)
     c.setFont("Helvetica", body_size)
     for line in address_lines:
         for wrapped in wrap_text(line, "Helvetica", body_size, content_width - INDENT):
-            c.drawString(start_x + INDENT, cursor_y, wrapped)
+            c.drawString(x + PADDING + INDENT, cursor_y, wrapped)
             cursor_y -= line_height
+
 
     c.restoreState()
 
