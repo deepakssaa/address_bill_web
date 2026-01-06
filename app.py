@@ -49,7 +49,7 @@ def measure_label_height(name, address_lines, content_width):
     for line in address_lines:
         lines += wrap_text(line, "Helvetica", body_size, content_width - INDENT)
 
-    return len(lines) * line_height + 2 * PADDING + line_height
+    return len(lines) * line_height + 2 * PADDING
 
 
 # ---------- DRAW LABEL ----------
@@ -58,32 +58,28 @@ def draw_label(c, x, y, name, address_lines):
     line_height = body_size + 4
     content_width = COLUMN_WIDTH - 2 * PADDING
 
-    cursor_y = y - PADDING - line_height  # extra top padding
-
-    # Border
     label_height = measure_label_height(name, address_lines, content_width)
     c.rect(x, y - label_height, COLUMN_WIDTH, label_height)
+
+    cursor_y = y - PADDING - line_height
 
     # TO,
     c.setFont("Helvetica-Bold", body_size)
     c.drawString(x + PADDING, cursor_y, "TO,")
     cursor_y -= line_height
 
-    # Name (indented)
+    # Name
     for line in wrap_text(name, "Helvetica-Bold", body_size + 2, content_width - INDENT):
         c.setFont("Helvetica-Bold", body_size + 2)
         c.drawString(x + PADDING + INDENT, cursor_y, line)
         cursor_y -= line_height
 
-    # Address (indented)
+    # Address
     c.setFont("Helvetica", body_size)
     for line in address_lines:
         for wrapped in wrap_text(line, "Helvetica", body_size, content_width - INDENT):
             c.drawString(x + PADDING + INDENT, cursor_y, wrapped)
             cursor_y -= line_height
-
-
-    c.restoreState()
 
 
 # ---------- ROUTES ----------
@@ -117,12 +113,12 @@ def generate():
             COLUMN_WIDTH - 2 * PADDING
         )
 
-        # Next row
+        # Move to next column if needed
         if y - label_height < MARGIN:
             x += COLUMN_WIDTH + GAP
             y = PAGE_HEIGHT - MARGIN
 
-        # New page
+        # New page if needed
         if x + COLUMN_WIDTH > PAGE_WIDTH - MARGIN:
             c.showPage()
             x = MARGIN
