@@ -37,7 +37,7 @@ def draw_single_label(c, col, row, name, address_lines):
     c.setFont("Helvetica-Bold", 11)
     c.drawString(base_x, base_y, "TO,")
 
-    indent = 14
+    indent = 19
 
     # Name
     c.setFont("Helvetica-Bold", 13)
