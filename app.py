@@ -10,9 +10,12 @@ app = Flask(__name__)
 # ---------- PAGE SETTINGS ----------
 PAGE_WIDTH, PAGE_HEIGHT = A4
 MARGIN = 40
-PADDING = 10                 # TRUE padding on all sides
-COLUMN_WIDTH = 260           # label width
-GAP = 10                     # space between labels
+PADDING = 10
+INDENT = 24
+GAP = 12
+
+COLUMN_COUNT = 3
+COLUMN_WIDTH = (PAGE_WIDTH - 2 * MARGIN - (COLUMN_COUNT - 1) * GAP) / COLUMN_COUNT
 
 
 # ---------- TEXT WRAP ----------
@@ -41,39 +44,52 @@ def measure_label_height(name, address_lines, content_width):
     line_height = body_size + 4
 
     lines = ["TO,"]
-    lines += wrap_text(name, "Helvetica-Bold", body_size + 2, content_width)
+    lines += wrap_text(name, "Helvetica-Bold", body_size + 2, content_width - INDENT)
 
     for line in address_lines:
-        lines += wrap_text(line, "Helvetica", body_size, content_width)
+        lines += wrap_text(line, "Helvetica", body_size, content_width - INDENT)
 
-    return len(lines) * line_height + 2 * PADDING
+    return len(lines) * line_height + 2 * PADDING + line_height
 
 
 # ---------- DRAW LABEL ----------
 def draw_label(c, x, y, name, address_lines):
-    content_width = COLUMN_WIDTH - 2 * PADDING
     body_size = 11
     line_height = body_size + 4
+    content_width = COLUMN_WIDTH - 2 * PADDING
 
-    cursor_y = y - PADDING
+    # Border
+    label_height = measure_label_height(name, address_lines, content_width)
+    c.rect(x, y - label_height, COLUMN_WIDTH, label_height)
+
+    c.saveState()
+
+    # Rotate content vertically
+    c.translate(x + COLUMN_WIDTH / 2, y - label_height / 2)
+    c.rotate(90)
+
+    start_x = -label_height / 2 + PADDING
+    cursor_y = content_width / 2 - PADDING - line_height
 
     # TO,
     c.setFont("Helvetica-Bold", body_size)
-    c.drawString(x + PADDING, cursor_y, "TO,")
-    cursor_y -= line_height
+    c.drawString(start_x, cursor_y, "TO,")
+    cursor_y -= line_height * 1.2
 
     # Name
-    for line in wrap_text(name, "Helvetica-Bold", body_size + 2, content_width):
+    for line in wrap_text(name, "Helvetica-Bold", body_size + 2, content_width - INDENT):
         c.setFont("Helvetica-Bold", body_size + 2)
-        c.drawString(x + PADDING, cursor_y, line)
+        c.drawString(start_x + INDENT, cursor_y, line)
         cursor_y -= line_height
 
     # Address
     c.setFont("Helvetica", body_size)
     for line in address_lines:
-        for wrapped in wrap_text(line, "Helvetica", body_size, content_width):
-            c.drawString(x + PADDING, cursor_y, wrapped)
+        for wrapped in wrap_text(line, "Helvetica", body_size, content_width - INDENT):
+            c.drawString(start_x + INDENT, cursor_y, wrapped)
             cursor_y -= line_height
+
+    c.restoreState()
 
 
 # ---------- ROUTES ----------
@@ -107,7 +123,7 @@ def generate():
             COLUMN_WIDTH - 2 * PADDING
         )
 
-        # Move to next column
+        # Next row
         if y - label_height < MARGIN:
             x += COLUMN_WIDTH + GAP
             y = PAGE_HEIGHT - MARGIN
@@ -118,12 +134,7 @@ def generate():
             x = MARGIN
             y = PAGE_HEIGHT - MARGIN
 
-        # Border (optional)
-        c.rect(x, y - label_height, COLUMN_WIDTH, label_height)
-
-        # Draw content
         draw_label(c, x, y, name, address_lines)
-
         y -= label_height + GAP
 
     c.save()
