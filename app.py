@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, send_file
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfbase.pdfmetrics import stringWidth
+from datetime import datetime
 import io
 import re
 
@@ -137,13 +138,23 @@ def generate():
     blocks = parse_addresses(raw)
     pdf = generate_pdf(blocks)
 
+    # label count
+    label_count = len(blocks)
+
+    # current date & time
+    now = datetime.now()
+    date_str = now.strftime("%Y-%m-%d")
+    time_str = now.strftime("%H-%M-%S")
+
+    # filename
+    filename = f"label{label_count}_{date_str}_{time_str}.pdf"
+
     return send_file(
         pdf,
         as_attachment=True,
-        download_name="address_labels.pdf",
+        download_name=filename,
         mimetype="application/pdf"
     )
-
 
 if __name__ == "__main__":
     app.run(debug=True)
