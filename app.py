@@ -3,6 +3,7 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfbase.pdfmetrics import stringWidth
 from datetime import datetime
+from zoneinfo import ZoneInfo
 import io
 import re
 
@@ -133,20 +134,20 @@ def preview():
 
 
 @app.route("/generate", methods=["POST"])
+@app.route("/generate", methods=["POST"])
 def generate():
     raw = request.form.get("addresses", "")
     blocks = parse_addresses(raw)
     pdf = generate_pdf(blocks)
 
-    # label count
     label_count = len(blocks)
 
-    # current date & time
-    now = datetime.now()
+    # Local timezone (CHANGE if needed)
+    now = datetime.now(ZoneInfo("Asia/Kolkata"))
+
     date_str = now.strftime("%Y-%m-%d")
     time_str = now.strftime("%H-%M-%S")
 
-    # filename
     filename = f"label{label_count}_{date_str}_{time_str}.pdf"
 
     return send_file(
@@ -155,6 +156,8 @@ def generate():
         download_name=filename,
         mimetype="application/pdf"
     )
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
