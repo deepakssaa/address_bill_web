@@ -42,6 +42,15 @@ header h1 {
     padding: 15px;
     border-radius: 8px;
     line-height: 1.5;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    align-items: center;
+    gap: 12px;
+}
+
+.address-count {
+    color: red;
 }
 
 form {
@@ -106,4 +115,17 @@ footer {
         font-size: 1rem;
         padding: 12px;
     }
+}
+
+.pdf-preview {
+    width: 270px;
+    height: 320px;
+    margin-top: 20px;
+    border: 1px solid #999;
+    background: #f8f8f8;
+}
+
+.workarea {
+    display: flex;
+    flex-direction: row;
 }

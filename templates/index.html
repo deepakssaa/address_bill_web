@@ -6,6 +6,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Courier Address Label Generator</title>
     <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.10.111/pdf.min.js"></script>
+    <style>
+        #pdfContainer {
+            width: 100%;
+            height: 650px;
+            border: 1px solid #999;
+            overflow: auto;
+            background: #f8f8f8;
+        }
+
+        canvas {
+            display: block;
+            margin: 0 auto 10px;
+            border: 1px solid #ccc;
+        }
+    </style>
 </head>
 
 <body>
@@ -13,21 +29,43 @@
         <header>
             <img src="/static/logo.png" width="200px" alt="">
             <h1>Courier Address Label Generator</h1>
-            <p class="hint">
-                Enter one address per block.<br>
-                Separate lines using new lines.<br><br>
-                <strong>Example:</strong><br>
-                Ravi Kumar<br>
-                Flat 12B, Rose Apartments<br>
-                MG Road<br>
-                Bangalore 560001
-            </p>
+            <div class="hint">
+                <div class="left">
+                    <p>
+                        Enter one address per block.<br>
+                        Separate lines using new lines.<br><br>
+                        <strong>Example:</strong><br>
+                        Ravi Kumar<br>
+                        Flat 12B, Rose Apartments<br>
+                        MG Road<br>
+                        Bangalore 560001
+                    </p>
+                    <!-- Address Count -->
+                    <div class="address-count">
+                        Addresses typed: <span id="count">0</span>
+                    </div>
+                </div>
+                <div class="right">
+                    <!-- PDF Preview (Exact Output) -->
+                    <iframe name="previewFrame" alt="Preview" class="pdf-preview" title="PDF Preview">
+                    </iframe>
+                </div>
+            </div>
         </header>
 
         <main>
             <form method="POST" action="/generate">
-                <textarea name="addresses" placeholder="Paste addresses here..." required></textarea>
-                <button type="submit">Generate Labels PDF</button>
+                <textarea name="addresses" id="addresses" placeholder="Paste addresses here..." required></textarea>
+                <div class="buttons">
+                    <!-- Preview -->
+                    <button type="submit" formaction="/preview" formtarget="previewFrame">
+                        Preview
+                    </button>
+                    <!-- Generate -->
+                    <button type="submit" formaction="/generate">
+                        Generate Labels PDF
+                    </button>
+                </div>
             </form>
         </main>
 
@@ -35,6 +73,21 @@
             <p>Copyrights &copy; 2026 | Suja Creations</p>
         </footer>
     </div>
+    <script>
+        const textarea = document.getElementById("addresses");
+        const countEl = document.getElementById("count");
+
+        function updateCount() {
+            const blocks = textarea.value
+                .trim()
+                .split(/\n\s*\n/)
+                .filter(b => b.trim().length > 0);
+
+            countEl.textContent = blocks.length;
+        }
+
+        textarea.addEventListener("input", updateCount);
+    </script>
 </body>
 
 </html>
