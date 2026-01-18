@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <style>
+        @page {
+            size: A4;
+            margin: 40px;
+        }
+
+        body {
+            font-family: "Noto Sans Tamil", sans-serif;
+            font-size: 14px;
+        }
+
+        .labels {
+            column-count: 3;
+            column-gap: 12px;
+        }
+
+        .label {
+            border: 1px solid #000;
+            padding: 10px;
+            margin-bottom: 12px;
+            break-inside: avoid;
+        }
+
+        .to {
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .name {
+            font-weight: bold;
+            font-size: 13px;
+            margin-left: 24px;
+            margin-bottom: 4px;
+        }
+
+        .addr {
+            margin-left: 24px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="labels">
+        {% for b in blocks %}
+        <div class="label">
+            <div class="to">{{ b.label }}</div>
+            <div class="name">{{ b.name }}</div>
+            {% for line in b.address %}
+            <div class="addr">{{ line }}</div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+</body>
+
+</html>
